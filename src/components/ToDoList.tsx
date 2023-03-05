@@ -3,55 +3,22 @@ import {
   useMantineTheme,
   Text,
   SimpleGrid,
+  Group,
+  CloseButton,
+  Badge,
+  Button,
 } from "@mantine/core";
-import {
-    IconArmchair,
-  IconCookie,
-  IconGauge,
-  IconLock,
-  IconMessage2,
-  IconUser,
-  TablerIcon,
-} from "@tabler/icons";
+import { IconArmchair, IconEdit, TablerIcon } from "@tabler/icons";
 import styled from "@emotion/styled";
-
-const MOCKDATA = [
-  {
-    icon: IconGauge,
-    title: "Extreme performance",
-    description:
-      "This dust is actually a powerful poison that will even make a pro wrestler sick, Regice cloaks itself with frigid air of -328 degrees Fahrenheit",
-  },
-  {
-    icon: IconUser,
-    title: "Privacy focused",
-    description:
-      "People say it can run at the same speed as lightning striking, Its icy body is so cold, it will not melt even if it is immersed in magma",
-  },
-  {
-    icon: IconCookie,
-    title: "No third parties",
-    description:
-      "They’re popular, but they’re rare. Trainers who show them off recklessly may be targeted by thieves",
-  },
-  {
-    icon: IconLock,
-    title: "Secure by default",
-    description:
-      "Although it still can’t fly, its jumping power is outstanding, in Alola the mushrooms on Paras don’t grow up quite right",
-  },
-  {
-    icon: IconMessage2,
-    title: "24/7 Support",
-    description:
-      "Rapidash usually can be seen casually cantering in the fields and plains, Skitty is known to chase around after its own tail",
-  },
-];
+import { TODO_STATUS } from "../constant/todo";
 
 interface FeatureProps {
   icon?: TablerIcon;
   title: React.ReactNode;
   description: React.ReactNode;
+  status: TODO_STATUS;
+  onDelete: () => void;
+  onEdit: () => void;
 }
 
 const FeatureContainer = styled.div`
@@ -61,13 +28,56 @@ const FeatureContainer = styled.div`
   margin: 10px;
 `;
 
-export function Feature({ icon: Icon = IconArmchair, title, description }: FeatureProps) {
+const GetStatusString = (status: TODO_STATUS) => {
+  console.log(status);
+  switch (status) {
+    case TODO_STATUS.DOING: {
+      return <Badge color="yellow">Doing</Badge>;
+    }
+    case TODO_STATUS.TODO: {
+      return <Badge>Todo</Badge>;
+    }
+    case TODO_STATUS.DONE: {
+      return <Badge color="green">Done</Badge>;
+    }
+  }
+};
+
+export function Feature({
+  icon: Icon = IconArmchair,
+  title,
+  description,
+  status,
+  onDelete,
+  onEdit,
+}: FeatureProps) {
   const theme = useMantineTheme();
   return (
     <FeatureContainer>
-      <ThemeIcon variant="light" size={40} radius={40}>
-        <Icon size={20} stroke={1.5} />
-      </ThemeIcon>
+      <Group position="apart">
+        <ThemeIcon variant="light" size={40} radius={40}>
+          <Icon size={20} stroke={1.5} />
+        </ThemeIcon>
+        <Group position="right">
+          <Button
+            variant="subtle"
+            size="xs"
+            style={{ width: "44px", height: "44px" }}
+            onClick={onEdit}
+          >
+            <ThemeIcon variant="light" size="xs" color="cyan" bg="none">
+              <IconEdit />
+            </ThemeIcon>
+          </Button>
+          <CloseButton
+            onClick={onDelete}
+            title="Close popover"
+            size="xl"
+            iconSize={20}
+          />
+        </Group>
+      </Group>
+      {GetStatusString(status)}
       <Text style={{ marginTop: theme.spacing.sm, marginBottom: 7 }}>
         {title}
       </Text>
@@ -79,11 +89,19 @@ export function Feature({ icon: Icon = IconArmchair, title, description }: Featu
 }
 
 interface ToDoListProps {
-  data?: FeatureProps[];
+  data: Omit<FeatureProps, "onDelete"|"onEdit">[];
+  onDelete: (index: number) => void;
+  onEdit: (index: number) => void;
 }
 
-const ToDoList = ({ data = MOCKDATA }: ToDoListProps) => {
+const ToDoList = ({ data, onDelete, onEdit }: ToDoListProps) => {
   const { spacing } = useMantineTheme();
+  const onClickDelete = (index: number) => {
+    onDelete(index);
+  };
+  const onClickEdit = (index: number) => {
+    onEdit(index);
+  };
   return (
     <SimpleGrid
       mt={60}
@@ -100,6 +118,13 @@ const ToDoList = ({ data = MOCKDATA }: ToDoListProps) => {
           icon={item.icon}
           title={item.title}
           description={item.description}
+          status={item.status}
+          onDelete={() => {
+            onClickDelete(index);
+          }}
+          onEdit={() => {
+            onClickEdit(index);
+          }}
         />
       ))}
     </SimpleGrid>

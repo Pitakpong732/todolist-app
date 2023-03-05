@@ -1,7 +1,11 @@
-import { IconApiAppOff, IconBackpack, IconBallBasketball } from "@tabler/icons";
+import { IconApiAppOff, IconBackpack, IconBallBasketball, TablerIcon } from "@tabler/icons";
 
-export const IconMapper = {
-    iconApiAppOff: IconApiAppOff,
-    iconBackpack: IconBackpack,
-    iconBallBasketball: IconBallBasketball
+interface IconMapperType {
+  [key:string]:TablerIcon
 }
+
+export const IconMapper:IconMapperType  = {
+  iconApiAppOff: IconApiAppOff,
+  iconBackpack: IconBackpack,
+  iconBallBasketball: IconBallBasketball,
+};
